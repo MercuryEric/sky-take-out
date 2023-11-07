@@ -10,4 +10,47 @@
             (#{f.dishId},#{f.name},#{f.value})
         </foreach>
     </insert>
+    <update id="update">
+        update dish
+        <set>
+            <if test="name!=null">
+                name=#{name},
+            </if>
+            <if test="categoryId!=null">
+                category_Id=#{categoryId},
+            </if>
+            <if test="price!=null">
+                price=#{price},
+            </if>
+            <if test="name!=null">
+                name=#{name},
+            </if>
+            <if test="image!=null">
+                image=#{image},
+            </if>
+            <if test="description!=null">
+                description=#{description},
+            </if>
+            <if test="status!=null">
+                status=#{status},
+            </if>
+            <if test="updateTime!=null">
+                update_Time=#{updateTime},
+            </if>
+            <if test="updateUser!=null">
+                update_User=#{updateUser},
+            </if>
+        </set>
+
+        <where>id =#{id}</where>
+    </update>
+    <delete id="deleteByDishIds">
+        delete from dish_flavor
+        <where>
+            dish_Id in
+            <foreach collection="dishIds" item="dishId" separator="," open="(" close=")">
+                #{dishId}
+            </foreach>
+        </where>
+    </delete>
 </mapper>
