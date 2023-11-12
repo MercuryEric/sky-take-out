@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.sky.annotation.AutoFill;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
+import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
 import com.sky.enumeration.OperationType;
 import com.sky.vo.DishVO;
@@ -43,4 +44,6 @@ public interface SetMealDishMapper {
      */
     @Select("select * from setmeal_dish where setmeal_id=#{setMealId}")
     List<SetmealDish> getBySetmealId(Long setmealId);
+
+
 }

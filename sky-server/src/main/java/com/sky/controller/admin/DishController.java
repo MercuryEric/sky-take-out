@@ -11,9 +11,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 菜品管理
@@ -26,6 +28,9 @@ public class DishController {
     @Autowired
     private DishService dishService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     /**
      * 新增菜品
      *
@@ -37,6 +42,11 @@ public class DishController {
     public Result save(@RequestBody DishDTO dishDTO) {
 
         dishService.saveWithFlavor(dishDTO);
+
+        //清除redis中缓存数据
+//        redisTemplate.delete("dish_" + dishDTO.getCategoryId());
+
+        cleanRedisCache("dish_" + dishDTO.getCategoryId());
 
         return Result.success();
 
@@ -59,6 +69,10 @@ public class DishController {
     @ApiOperation("菜品批量删除")
     public Result delete(@RequestParam List<Long> ids) {
         dishService.deleteBatch(ids);
+
+        //将redis中所有菜品缓存数据清除
+        cleanRedisCache("dish_*");
+
 
         return Result.success();
     }
@@ -90,12 +104,16 @@ public class DishController {
     public Result update(@RequestBody DishDTO dishDTO) {
         dishService.updateWithFlavors(dishDTO);
 
+        //将redis中所有菜品缓存数据清除
+        cleanRedisCache("dish_*");
+
         return Result.success();
 
     }
 
     /**
      * 根据分类id查询菜品
+     *
      * @param categoryId
      * @return
      */
@@ -106,6 +124,37 @@ public class DishController {
 
         return Result.success(dishList);
 
+    }
+
+
+    /**
+     * 菜品起售停售
+     *
+     * @param id
+     * @param status
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("菜品起售停售")
+    public Result saleOrNotSale(@RequestParam Long id, @PathVariable Integer status) {
+        dishService.saleOrNotSale(status, id);
+
+        //清除redis中所有缓存数据
+        cleanRedisCache("dish_*");
+
+        return Result.success();
+
+    }
+
+    /**
+     * 清楚redis中缓存菜品数据
+     *
+     * @param pattern
+     */
+    private void cleanRedisCache(String pattern) {
+        //将redis中所有菜品缓存数据清除
+        Set keys = redisTemplate.keys(pattern);
+        redisTemplate.delete(keys);
     }
 
 
