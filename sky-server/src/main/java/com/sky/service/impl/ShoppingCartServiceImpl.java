@@ -10,6 +10,7 @@ import com.sky.mapper.SetMealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.mapper.ShoppingCartMapper;
 import com.sky.service.ShoppingCartService;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,6 +111,42 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public void cleanShoppingCart() {
         Long userId = BaseContext.getCurrentId();
         shoppingCartMapper.deleteByUserId(userId);
+
+    }
+
+    /**
+     * 删除购物车中的一个商品
+     *
+     * @param shoppingCartDTO
+     * @return
+     */
+    @Override
+    public void sub(ShoppingCartDTO shoppingCartDTO) {
+        ShoppingCart shoppingCart = new ShoppingCart();
+        BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
+
+        shoppingCart.setUserId(BaseContext.getCurrentId());
+
+        //查询购物车数据信息
+        List<ShoppingCart> shoppingCartList = shoppingCartMapper.list(shoppingCart);
+
+        if (shoppingCartList != null && shoppingCartList.size() > 0) {
+            shoppingCart = shoppingCartList.get(0);
+            Integer number = shoppingCart.getNumber();
+            //判断number数量
+            if (number > 1) {
+                //大于1则将数量减一
+                shoppingCart.setNumber(number - 1);
+                shoppingCartMapper.updateById(shoppingCart);
+            } else {
+                //等于1则直接在数据库中删除此条数据
+                shoppingCartMapper.deleteById(shoppingCart.getId());
+
+            }
+
+
+        }
+
 
     }
 }
