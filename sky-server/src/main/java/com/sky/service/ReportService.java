@@ -1,6 +1,7 @@
 package com.sky.service;
 
 import com.sky.vo.OrderReportVO;
+import com.sky.vo.SalesTop10ReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,6 +27,7 @@ public interface ReportService {
      * @return
      */
     UserReportVO getUserStatistics(LocalDate beginTime, LocalDate endTime);
+
     /**
      * 统计指定时间区间内的订单数据
      *
@@ -34,4 +36,12 @@ public interface ReportService {
      * @return
      */
     OrderReportVO getOrdersStatistics(LocalDate beginTime, LocalDate endTime);
+    /**
+     * 统计指定时间区间内的销量排名TOP10
+     *
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    SalesTop10ReportVO getSalesTop10(LocalDate beginTime, LocalDate endTime);
 }
