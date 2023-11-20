@@ -67,4 +67,11 @@ public interface OrderMapper {
      * @return
      */
     Double sumByMap(Map map);
+
+    /**
+     * 根据动态条件查询集合中每个日期的订单数量
+     * @param map
+     * @return
+     */
+    Integer countByMap(Map map);
 }
